@@ -43,3 +43,33 @@ func Test6(t *testing.T) {
   fmt.Println(path)
   gotesttools.AssertEqual(t, `root\user\dk1027`, path.String())
 }
+
+func TestRemoveSpuriousSlashes(t *testing.T) {
+  path := New().P("user/////.//dk1027")
+  fmt.Println(path)
+  gotesttools.AssertEqual(t, "user/dk1027", path.String())
+}
+
+func TestRemoveSpuriousSlashes2(t *testing.T) {
+  path := New2(&Options{sep: `\`}).P(`user\\\.\\dk1027`)
+  fmt.Println(path)
+  gotesttools.AssertEqual(t, `user\dk1027`, path.String())
+}
+
+func TestRemoveSpuriousSlashes3(t *testing.T) {
+  path := New().P("user/////..//dk1027")
+  fmt.Println(path)
+  gotesttools.AssertEqual(t, "user/../dk1027", path.String())
+}
+
+func TestRootSlash(t *testing.T) {
+  path := New().P("/user/////..//dk1027")
+  fmt.Println(path)
+  gotesttools.AssertEqual(t, "/user/../dk1027", path.String())
+}
+
+func TestRootSlash2(t *testing.T) {
+  path := New("/")
+  fmt.Println(path)
+  gotesttools.AssertEqual(t, "/", path.String())
+}

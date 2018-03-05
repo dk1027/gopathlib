@@ -1,6 +1,7 @@
 package gopathlib
 
 import (
+  "fmt"
   "os"
   "strings"
 )
@@ -11,20 +12,33 @@ type Options struct {
 
 type PathStruct struct{
   segments []string
+  addRootSlash bool // default is false
   *Options
 }
 
 func (this *PathStruct) P(segments ...string) (*PathStruct) {
+  if len(this.segments) == 0 && len(segments) > 0{
+    if string(segments[0][0]) == this.sep {
+      this.addRootSlash = true
+    }
+  }
   for _, seg := range segments {
-    if seg != "" {
-      this.segments = append(this.segments, seg)
+    // Remove spurious slashes and single dot
+    for _, seg2 := range strings.Split(seg, this.sep) {
+      if seg2 != "" && seg2 != "." {
+        this.segments = append(this.segments, seg2)
+      }
     }
   }
   return this
 }
 
 func (this *PathStruct) String() string {
-  return strings.Join(this.segments, this.sep)
+  out := strings.Join(this.segments, this.sep)
+  if this.addRootSlash {
+    out = fmt.Sprintf("%s%s", this.sep, out)
+  }
+  return out
 }
 
 func Pwd() (*PathStruct) {
